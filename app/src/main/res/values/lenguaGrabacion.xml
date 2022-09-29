@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="comboLenguaGrabacion">
+        <item>---------------</item>
+        <item>Español</item>
+        <item>Tsafiki</item>
+        <item>Inglés</item>
+        <item>Quechua</item>
+    </string-array>
+
+    <string-array name="comboLenguaMadre">
+        <item>---------------</item>
+        <item>Español</item>
+        <item>Tsafiki</item>
+        <item>Inglés</item>
+        <item>Quechua</item>
+    </string-array>
+
+    <string-array name="comboLenguaSec">
+        <item>---------------</item>
+        <item>Español</item>
+        <item>Tsafiki</item>
+        <item>Inglés</item>
+        <item>Quechua</item>
+    </string-array>
+</resources>

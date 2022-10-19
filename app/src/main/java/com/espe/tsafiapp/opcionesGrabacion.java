@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class opcionesGrabacion extends AppCompatActivity {
+
 
     Button btnIrGrabandoAudio;
     Button btnIrGrabandoVideo;
@@ -21,6 +23,12 @@ public class opcionesGrabacion extends AppCompatActivity {
         btnIrGrabandoAudio=(Button)findViewById(R.id.btnGrabandoAudio);
         btnIrGrabandoVideo=(Button)findViewById(R.id.btnGrabandoVideo);
         btnIrCapturaFoto=(Button)findViewById(R.id.btnCapturarFoto);
+
+        Intent intent = getIntent();
+
+        String fechaActual = intent.getStringExtra(Grabacion.FECHA_ACTUAL);
+
+        Log.d("lptm",fechaActual);
 
         btnIrGrabandoAudio.setOnClickListener(new View.OnClickListener() {
             @Override

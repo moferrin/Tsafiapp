@@ -12,8 +12,12 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Grabacion extends AppCompatActivity {
 
+    public static String FECHA_ACTUAL = "fechaActual";
     Spinner comboLenguasGrabacion;
     Spinner comboLenguaMadre;
     Spinner comboLenguaSec;
@@ -33,6 +37,7 @@ public class Grabacion extends AppCompatActivity {
     String nombreApe;
     String edad;
     String genero;
+    String fechaActual;
 
 
     @Override
@@ -84,11 +89,16 @@ public class Grabacion extends AppCompatActivity {
             }
         });
 
+        Date todayDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        fechaActual = sdf.format(todayDate);
+
         btnGuardarInf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 traerDatos();
                 Intent i = new Intent(Grabacion.this, opcionesGrabacion.class);
+                i.putExtra(FECHA_ACTUAL,fechaActual);
                 startActivity(i);
             }
         });

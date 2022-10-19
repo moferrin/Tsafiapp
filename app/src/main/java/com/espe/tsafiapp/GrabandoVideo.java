@@ -86,6 +86,7 @@ public class GrabandoVideo extends AppCompatActivity {
                     byte[] buf = new byte[1024];
                     int len;
 
+                    //copio e buffer
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);
                     }

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("laptm","nueva instancia inicio fgrament");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -73,4 +75,5 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
     public void irCompartir() {
 
     }
+
 }

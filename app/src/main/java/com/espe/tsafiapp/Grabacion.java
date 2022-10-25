@@ -3,6 +3,7 @@ package com.espe.tsafiapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -11,6 +12,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+
+import com.espe.tsafiapp.data.Traducciones;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,11 +42,14 @@ public class Grabacion extends AppCompatActivity {
     String genero;
     String fechaActual;
 
+    private TraduccionesDbHelper mTraduccionesDbHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grabacion);
+        mTraduccionesDbHelper = new TraduccionesDbHelper(this);
 
         btnGuardarInf=(Button)findViewById(R.id.btnGuardarInf);
 
@@ -93,15 +99,28 @@ public class Grabacion extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
         fechaActual = sdf.format(todayDate);
 
+
+
         btnGuardarInf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 traerDatos();
+                guardarGrabacion();
                 Intent i = new Intent(Grabacion.this, opcionesGrabacion.class);
                 i.putExtra(FECHA_ACTUAL,fechaActual);
                 startActivity(i);
             }
         });
+
+        //poner el retorno a la vista principal
+
+
+
+    }
+
+    public void guardarGrabacion(){
+        Traducciones traduccion = new Traducciones(lengGrab,lengMad,lengSec,ciudad,nota,nombreApe,edad,genero);
+        new AddTraduccionTask().execute(traduccion);
     }
 
     public void traerDatos (){
@@ -113,5 +132,24 @@ public class Grabacion extends AppCompatActivity {
         nombreApe = editNombreApellido.getText().toString().trim();
         edad = editEdad.getText().toString().trim();
         genero = checkGeneroM.isChecked() ? "Masculino" : "Femenino";
+    }
+
+    private class AddTraduccionTask extends AsyncTask<Traducciones, Void, Boolean> {
+        String mLawyerId=null;
+        @Override
+        protected Boolean doInBackground(Traducciones... lawyers) {
+            if (mLawyerId != null) {
+                return null;//mTraduccionesDbHelper.updateTraduccion(lawyers[0], mLawyerId) > 0;
+            } else {
+                return mTraduccionesDbHelper.saveTraduccion(lawyers[0]) > 0;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            //showLawyersScreen(result);
+        }
+
     }
 }

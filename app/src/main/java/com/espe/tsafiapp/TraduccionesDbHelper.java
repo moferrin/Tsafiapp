@@ -68,7 +68,7 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
     }
 
 
-/*
+
     public int updateTraduccion(Traducciones traducciones, String traduccionId) {
         return getWritableDatabase().update(
                 TraduccionesEntry.TABLE_NAME,
@@ -76,7 +76,7 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
                 TraduccionesEntry.ID + " LIKE ?",
                 new String[]{traduccionId}
         );
-    }*/
+    }
 
 /*
     public long mockLawyer(Traducciones traducciones) {

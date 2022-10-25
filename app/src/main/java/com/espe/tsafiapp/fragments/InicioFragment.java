@@ -1,12 +1,17 @@
 package com.espe.tsafiapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
@@ -15,10 +20,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.espe.tsafiapp.Grabacion;
 import com.espe.tsafiapp.R;
 import com.espe.tsafiapp.TraduccionesDbHelper;
-import com.espe.tsafiapp.data.Traducciones;
+import com.espe.tsafiapp.VolleySingleton;
+import com.espe.tsafiapp.data.TraduccionesContract;
 import com.espe.tsafiapp.interfaces.IComunicaFragments;
+import com.espe.tsafiapp.red.ManagerDatos;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,6 +61,9 @@ public class InicioFragment extends Fragment {
     Activity actividad;
     CardView cardGrabar, cardCorregir, cardTraducir, cardVerificar_1, cardVerificar_2, cardCompartir;
     IComunicaFragments interfaceComunicaFragments;
+
+    private final String URL_SAVE_NAME = "http://192.168.8.101:3000/grabacion";
+
     public InicioFragment() {
         // Required empty public constructor
     }
@@ -56,6 +78,7 @@ public class InicioFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static InicioFragment newInstance(String param1, String param2) {
+        Log.d("laptm","nueva instancia inicio fgrament");
         InicioFragment fragment = new InicioFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -66,11 +89,8 @@ public class InicioFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("laptm","oncreate inicio fgrament");
         super.onCreate(savedInstanceState);
-        mTraduccionesDbHelper = new TraduccionesDbHelper(getContext());
-
-        // Carga de datos
-        loadLawyers();
 
 
 
@@ -80,29 +100,8 @@ public class InicioFragment extends Fragment {
         }
 
     }
-    private void loadLawyers() {
-        new LawyersLoadTask().execute();
-    }
-    private class LawyersLoadTask extends AsyncTask<Void, Void, Cursor> {
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            mTraduccionesDbHelper.saveTraduccion(new Traducciones("espa desde inicio fragment", "madre",
-                    "secund", "EL carmen","nota","apellidonombre","edad",
-                    "geneno"));
-            return mTraduccionesDbHelper.getAllTraducciones();
-        }
 
-        @Override
-        protected void onPostExecute(Cursor cursor) {
-            int a = cursor.getCount();
-            if (cursor != null && a > 0) {
-                Log.d("laptm",String.valueOf(a));
-                //mLawyersAdapter.swapCursor(cursor);
-            } else {
-                // Mostrar empty state
-            }
-        }
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,15 +118,104 @@ public class InicioFragment extends Fragment {
 
         eventosMenu();
 
-
+        mTraduccionesDbHelper = new TraduccionesDbHelper(getContext());
+        sincronizarDatos();
 
         return vista;
     }
+
+    private void sincronizarDatos() {
+        new TraduccionesLoadTask().execute();
+    }
+
+
+    private class TraduccionesLoadTask extends AsyncTask<Void, Void, Cursor> {
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+            /*mTraduccionesDbHelper.saveTraduccion(new Traducciones("espa desde inicio fragment", "madre",
+                    "secund", "EL carmen","nota","apellidonombre","edad",
+                    "geneno"));*/
+            return mTraduccionesDbHelper.getAllTraducciones();
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            int a = cursor.getCount();
+            if (cursor != null && a > 0) {
+                Log.d("laptm",String.valueOf(a)+"aqui debera decir tamaño");
+                /*ManagerDatos manager = new ManagerDatos();
+                manager.enviarDatos(cursor);*/
+                enviarDatos(cursor);
+                //mLawyersAdapter.swapCursor(cursor);
+            } else {
+                // Mostrar empty state
+            }
+        }
+    }
+    @SuppressLint("Range")
+    public void enviarDatos(Cursor cursor){
+        if (cursor.moveToFirst()) {
+            do {
+                //calling the method to save the unsynced name to MySQL
+                saveName(
+                        cursor.getString(cursor.getColumnIndex(TraduccionesContract.TraduccionesEntry.ID))
+                );
+            } while (cursor.moveToNext());
+        }
+    }
+
+    private void saveName(
+            final String id_persona) {
+        Log.d("laptm",id_persona);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_NAME,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            String obj1 = new JSONObject(response).getString("status");
+                            Log.d("success","respuesta per_enc");
+                            if ("persona_enc_c".equals(obj1)) {
+                                Log.d("success","envia per_enc");
+                                // actualizando el estado en sqlite
+                                //db.actualizarPersonaEncuestadaBDD(id_persona,MainActivity3.NAME_SYNCED_WITH_SERVER);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("laptm",error.toString());
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("lenguaGrab",id_persona );
+                params.put("lenguaMadre",id_persona );
+                params.put("lenguaSecundaria",id_persona );
+                params.put("ciudad",id_persona );
+                params.put("nota",id_persona );
+                params.put("apellidoNombre",id_persona );
+                params.put("edad",id_persona );
+                params.put("genero",id_persona );
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
     private void eventosMenu(){
         cardGrabar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                interfaceComunicaFragments.irGrabar();
+                //interfaceComunicaFragments.irGrabar();
+                Intent intent = new Intent(getActivity(), Grabacion.class);
+                lanzarVista.launch(intent);
+
             }
         });
 
@@ -165,7 +253,21 @@ public class InicioFragment extends Fragment {
                 interfaceComunicaFragments.irCompartir();
             }
         });
+
     }
+    ActivityResultLauncher<Intent> lanzarVista = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Log.d("laptm","se fuee, llamar a sincronizar ");
+                    sincronizarDatos();
+                    if(result.getResultCode() == Activity.RESULT_OK){
+                    }
+                }
+    });
+
+
 
     public interface OnFragmentInteractionListener {
     }

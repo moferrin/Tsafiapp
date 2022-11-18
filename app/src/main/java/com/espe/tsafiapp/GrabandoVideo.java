@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.File;
@@ -32,13 +34,23 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class GrabandoVideo extends AppCompatActivity {
     String fechaActual;
     private VideoView mVideoView;
+    ProgressDialog progressDialog;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grabando_video);
 
@@ -47,6 +59,8 @@ public class GrabandoVideo extends AppCompatActivity {
                     new String[]{Manifest.permission.CAMERA},
                     1000);
         }
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading...");
 
         mVideoView = findViewById(R.id.videoView3);
 
@@ -86,15 +100,17 @@ public class GrabandoVideo extends AppCompatActivity {
                     byte[] buf = new byte[1024];
                     int len;
 
-                    //copio e buffer
+                    //copio el buffer
                     while ((len = inputStream.read(buf)) > 0) {
                         fileOutputStream.write(buf, 0, len);
                     }
                     fileOutputStream.close();
                     inputStream.close();
 
+                    testeo(videoFile);
+
                     mVideoView.setVideoURI(uriVideo);
-                    mVideoView.start();
+                    //mVideoView.start();
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -103,4 +119,57 @@ public class GrabandoVideo extends AppCompatActivity {
             }
         }
     });
+
+
+
+    private void testeo (File f) {
+
+        progressDialog.show();
+
+
+        Log.d("laptm", "cheeee");
+        String filePath = f.getAbsolutePath().toString();
+        String name = f.getName();
+
+        File file = f;
+        Log.d("laptm", "cheeee2");
+
+        // Parsing any Media type file
+        RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestBody);
+        RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+        Log.d("laptm", "cheeee3");
+        ApiConfig getResponse = AppConfig.getRetrofit().create(ApiConfig.class);
+
+        Log.d("laptm", "cheeee3_4");
+        Call<ServerResponse> call= getResponse.uploadFile(fileToUpload, filename);
+
+        Log.d("laptm", "cheeee4");
+        call.enqueue(new Callback<ServerResponse>() {
+            @Override
+            public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                Log.d("laptm", "cheeee6");
+                ServerResponse serverResponse = response.body();
+                Log.d("laptm", "cheeee7");
+                if (serverResponse != null) {
+                    if (serverResponse.getSuccess()) {
+                        Toast.makeText(getApplicationContext(), serverResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), serverResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    assert serverResponse != null;
+                    Log.d("Response", serverResponse.toString());
+                }
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
 }

@@ -113,9 +113,6 @@ public class Grabacion extends AppCompatActivity {
         });
 
         //poner el retorno a la vista principal
-
-
-
     }
 
     public void guardarGrabacion(){

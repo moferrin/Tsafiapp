@@ -28,7 +28,7 @@ public class opcionesGrabacion extends AppCompatActivity {
 
         String fechaActual = intent.getStringExtra(Grabacion.FECHA_ACTUAL);
 
-        Log.d("lptm",fechaActual);
+        Log.d("laptm",fechaActual);
 
         btnIrGrabandoAudio.setOnClickListener(new View.OnClickListener() {
             @Override

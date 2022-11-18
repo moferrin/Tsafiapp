@@ -21,7 +21,8 @@
         android:theme="@style/Theme.Tsafiapp">
         <meta-data
             android:name="com.google.android.actions"
-            android:resource="@xml/file_paths" />
+            android:resource="@xml/file_paths"
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"

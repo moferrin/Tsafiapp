@@ -2,6 +2,7 @@ package com.espe.tsafiapp.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -36,8 +38,10 @@ import com.espe.tsafiapp.red.ManagerDatos;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -119,7 +123,7 @@ public class InicioFragment extends Fragment {
         eventosMenu();
 
         mTraduccionesDbHelper = new TraduccionesDbHelper(getContext());
-        sincronizarDatos();
+        //sincronizarDatos();
 
         return vista;
     }
@@ -206,6 +210,15 @@ public class InicioFragment extends Fragment {
             }
         };
         VolleySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+    private class ServerUpdate extends AsyncTask<String, String, String>{
+        ProgressDialog pDialog;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
     }
 
     private void eventosMenu(){

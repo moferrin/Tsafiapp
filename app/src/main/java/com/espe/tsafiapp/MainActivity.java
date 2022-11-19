@@ -1,12 +1,18 @@
 package com.espe.tsafiapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,11 +27,19 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
 
 
     Fragment fragmentInicio;
+    private static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("laptm","nueva instancia inicio fgrament");
         super.onCreate(savedInstanceState);
+
+        if(instance == null){
+            instance = this;
+        }
+
+
+
         setContentView(R.layout.activity_main);
 
         fragmentInicio = new InicioFragment();
@@ -37,6 +51,26 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
 
     }
 
+    public static MainActivity getInstance(){
+        return instance;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static boolean hasNetwork(){
+        return instance.isNetworkConnected();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean isNetworkConnected(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
+
+
     @Override
     public void irGrabar() {
         Intent cardGrabar = new Intent(this, Grabacion.class);
@@ -46,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
     @Override
     public void irCorregir() {
         Intent cardCorregir = new Intent(this, Corregir.class);
+        String path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getPath();
+        cardCorregir.putExtra("path",path);
         startActivity(cardCorregir);
     }
 

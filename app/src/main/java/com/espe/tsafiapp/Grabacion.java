@@ -140,7 +140,6 @@ public class Grabacion extends AppCompatActivity {
             } else {
                 return mTraduccionesDbHelper.saveTraduccion(lawyers[0]) > 0;
             }
-
         }
 
         @Override

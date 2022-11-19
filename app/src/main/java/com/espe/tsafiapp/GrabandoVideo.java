@@ -64,22 +64,21 @@ public class GrabandoVideo extends AppCompatActivity {
 
         mVideoView = findViewById(R.id.videoView3);
 
-        Date todayDate = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        fechaActual = sdf.format(todayDate);
-
+        Intent intent = getIntent();
+        fechaActual = intent.getStringExtra(opcionesGrabacion.FECHA_ACTUAL);
     }
 
     private File crearDirectorio() {
-        File path = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File patchFecha = null;
         if(!(new File(path, fechaActual).exists())){
             patchFecha = new File(path, fechaActual);
             patchFecha.mkdir();
+            return patchFecha;
+        } else {
+            return new File(path, fechaActual);
         }
-        return patchFecha;
     }
-
 
     public void grabarV(View v){
         lanzarVideo.launch(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
@@ -107,7 +106,7 @@ public class GrabandoVideo extends AppCompatActivity {
                     fileOutputStream.close();
                     inputStream.close();
 
-                    testeo(videoFile);
+                    //testeo(videoFile);
 
                     mVideoView.setVideoURI(uriVideo);
                     //mVideoView.start();
@@ -115,7 +114,6 @@ public class GrabandoVideo extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         }
     });

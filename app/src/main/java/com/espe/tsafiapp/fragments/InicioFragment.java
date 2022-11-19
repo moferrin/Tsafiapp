@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,15 +32,12 @@ import com.espe.tsafiapp.TraduccionesDbHelper;
 import com.espe.tsafiapp.VolleySingleton;
 import com.espe.tsafiapp.data.TraduccionesContract;
 import com.espe.tsafiapp.interfaces.IComunicaFragments;
-import com.espe.tsafiapp.red.ManagerDatos;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,7 +62,7 @@ public class InicioFragment extends Fragment {
     CardView cardGrabar, cardCorregir, cardTraducir, cardVerificar_1, cardVerificar_2, cardCompartir;
     IComunicaFragments interfaceComunicaFragments;
 
-    private final String URL_SAVE_NAME = "http://192.168.8.101:3000/grabacion";
+    private final String URL_SAVE_NAME = "http://192.168.0.113:3000/grabacion";
 
     public InicioFragment() {
         // Required empty public constructor

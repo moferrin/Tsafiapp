@@ -9,12 +9,10 @@ import android.view.View;
 import android.widget.Button;
 
 public class opcionesGrabacion extends AppCompatActivity {
-
-
     Button btnIrGrabandoAudio;
     Button btnIrGrabandoVideo;
     Button btnIrCapturaFoto;
-
+    public static String FECHA_ACTUAL = "fechaActual";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +32,7 @@ public class opcionesGrabacion extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(opcionesGrabacion.this, GrabandoAudio.class);
+                i.putExtra(FECHA_ACTUAL,fechaActual);
                 startActivity(i);
             }
         });
@@ -42,6 +41,7 @@ public class opcionesGrabacion extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(opcionesGrabacion.this, GrabandoVideo.class);
+                i.putExtra(FECHA_ACTUAL,fechaActual);
                 startActivity(i);
             }
         });
@@ -50,6 +50,7 @@ public class opcionesGrabacion extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(opcionesGrabacion.this, CapturarFoto.class);
+                i.putExtra(FECHA_ACTUAL,fechaActual);
                 startActivity(i);
             }
         });

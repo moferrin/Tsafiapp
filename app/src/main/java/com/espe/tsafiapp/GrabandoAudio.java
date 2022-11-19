@@ -1,28 +1,22 @@
 package com.espe.tsafiapp;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 
 /*
 import net.gotev.uploadservice.MultipartUploadRequest;
@@ -41,14 +35,14 @@ import net.gotev.uploadservice.protocols.multipart.MultipartUploadRequest;*/
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -61,6 +55,7 @@ import retrofit2.Response;
 public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCompletionListener {
 
     ProgressDialog progressDialog;
+    int serverResponseCode = 0;
 
     private static final String CHANNEL_ID = "1";
     private Button btnGrabar;
@@ -74,7 +69,7 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
     protected void onCreate(Bundle savedInstanceState) {
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Uploading...");
+        //progressDialog.setMessage("Uploading...");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grabando_audio);
@@ -89,16 +84,8 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
                          1000);
         }
 
-        Date todayDate = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        fechaActual = sdf.format(todayDate);
-
-        //Toast.makeText(getApplicationContext(),fechaActual.toString(),Toast.LENGTH_SHORT).show();
-/*
-        Toast.makeText(getApplicationContext(),Environment.getDataDirectory()
-                .getAbsolutePath().toString(),Toast.LENGTH_SHORT).show();
-*/
-        //Toast.makeText(getApplicationContext(),getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString(),Toast.LENGTH_SHORT).show();
+        Intent intent = getIntent();
+        fechaActual = intent.getStringExtra(opcionesGrabacion.FECHA_ACTUAL);
 
     }
 
@@ -108,8 +95,10 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
         if(!(new File(path, fechaActual).exists())){
             patchFecha = new File(path, fechaActual);
             patchFecha.mkdir();
+            return patchFecha;
+        } else {
+            return new File(path, fechaActual);
         }
-        return patchFecha;
     }
 
     private void testeo (File f) {
@@ -139,6 +128,9 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
             @Override
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
                 Log.d("laptm", "cheeee6");
+                Log.d("laptm", response.toString());
+                Log.d("laptm",call.toString());
+
                 ServerResponse serverResponse = response.body();
                 Log.d("laptm", "cheeee7");
                 if (serverResponse != null) {
@@ -161,6 +153,178 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
         });
 
     }
+
+    private void teste2(File f){
+        String uploadFilePath = f.getAbsolutePath();
+        progressDialog = ProgressDialog.show(GrabandoAudio.this, "", "Uploading file...", true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("laptm","uploading started.....");
+                    }
+                });
+                uploadFile(uploadFilePath);
+
+            }
+        }).start();
+    }
+
+    @SuppressLint("LongLogTag")
+    public int uploadFile(String sourceFileUri) {
+
+
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+
+        Log.d("laptm","verificando si esxxites");
+
+        if (!sourceFile.isFile()) {
+
+            progressDialog.dismiss();
+
+            //Log.e("uploadFile", "Source File not exist :"+uploadFilePath + "" + uploadFileName);
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    //messageText.setText("Source File not exist :"+uploadFilePath + "" + uploadFileName);
+                }
+            });
+
+            return 0;
+
+        }
+        else
+        {
+            Log.d("laptm","si esxxites");
+            try {
+                Log.d("laptm","intento");
+                // open a URL connection to the Servlet
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL("http://192.168.0.116:3000/upload");
+                Log.d("laptm","llega a URL");
+                // Open a HTTP  connection to  the URL
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setDoInput(true); // Allow Inputs
+                conn.setDoOutput(true); // Allow Outputs
+                conn.setUseCaches(false); // Don't use a Cached Copy
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+                Log.d("laptm","pasa conn");
+
+                OutputStream oups = conn.getOutputStream();
+                Log.d("laptm","pasa oups");
+                dos = new DataOutputStream(oups);
+                Log.d("laptm","dos");
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
+                        + fileName + "\"" + lineEnd);
+
+                dos.writeBytes(lineEnd);
+
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available();
+
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                Log.d("laptm","antes de getRsponse");
+                serverResponseCode = conn.getResponseCode();
+                Log.d("laptm","despues de getRespose");
+                String serverResponseMessage = conn.getResponseMessage();
+
+                Log.d("laptm", "HTTP Response is : "
+                        + serverResponseMessage + ": " + serverResponseCode);
+
+                //200
+                if(serverResponseCode == serverResponseCode){
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+
+                       /*String msg = "File Upload Completed.\n\n See uploaded file here : \n\n"
+                               +" http://www.androidexample.com/media/uploads/"
+                               +uploadFileName;*/
+
+                            //messageText.setText(msg);
+                            Toast.makeText(GrabandoAudio.this, "File Upload Complete.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                //close the streams //
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (MalformedURLException ex) {
+
+                progressDialog.dismiss();
+                ex.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //messageText.setText("MalformedURLException Exception : check script url.");
+                        Log.d("laptm","MalformedURLException Exception : check script url.");
+                        Toast.makeText(GrabandoAudio.this, "MalformedURLException", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.d("Upload file to server", "error: " + ex.getMessage(), ex);
+            } catch (Exception e) {
+
+                progressDialog.dismiss();
+                e.printStackTrace();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //messageText.setText("Got Exception : see logcat ");
+                        Toast.makeText(GrabandoAudio.this, "Got Exception : see logcat ",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Log.d("laptm", "Upload file to server Exception Exception : "
+                        + e.getMessage(), e);
+            }
+            progressDialog.dismiss();
+            return serverResponseCode;
+
+        } // End else block
+    }
+
 
 
     //@RequiresApi(api = Build.VERSION_CODES.N)
@@ -195,7 +359,7 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
             player.setOnCompletionListener(this);
             try {
                 player.setDataSource(archivo.getAbsolutePath());
-                testeo(archivo);
+                //testeo(archivo);
                 //teste2(archivo);
             } catch (Exception e) {
                 Log.d("archivo", "no se encontro archivo");

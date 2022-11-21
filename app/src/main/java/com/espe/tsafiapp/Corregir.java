@@ -14,18 +14,22 @@ import java.io.File;
 
 public class Corregir extends AppCompatActivity {
 
+
+    RecyclerView recyclerView;
+    File[] filesAndFolders;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_revisar);
 
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         TextView noFilesText = findViewById(R.id.nofiles_textview);
 
-        String patch = getIntent().getStringExtra("path");;
+        String patch = getIntent().getStringExtra("path");
 
         File root = new File(patch);
-        File[] filesAndFolders = root.listFiles();
+        filesAndFolders = root.listFiles();
 
         if(filesAndFolders == null || filesAndFolders.length==0){
             noFilesText.setVisibility(View.VISIBLE);
@@ -35,6 +39,6 @@ public class Corregir extends AppCompatActivity {
         noFilesText.setVisibility(View.INVISIBLE);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new AdapterArchivos(getApplicationContext(),filesAndFolders));
+        recyclerView.setAdapter(new AdapterArchivos(this,filesAndFolders));
     }
 }

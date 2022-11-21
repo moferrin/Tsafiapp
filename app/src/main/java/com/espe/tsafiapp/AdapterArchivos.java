@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.espe.tsafiapp.audioR.MiMusicPlayer;
 
 import java.io.File;
 public class AdapterArchivos extends RecyclerView.Adapter<AdapterArchivos.ViewHolder>{
@@ -50,16 +53,25 @@ public class AdapterArchivos extends RecyclerView.Adapter<AdapterArchivos.ViewHo
                     cardCorregir.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(cardCorregir);
                 } else {
+                    ///MiMusicPlayer.getInstance().reset();
+                    //MiMusicPlayer.currentIndex = position;
+                    Log.d("laptm","antes de intent");
+                    Intent intent = new Intent(context, MusicPlayerActivity.class);
+                    intent.putExtra("SONG",selectedFile.getAbsolutePath());
+                    Log.d("laptm","antes de startActivity");
+                    context.startActivity(intent);
+
+                    /*
                     try {
-                        Intent intent = new Intent();
-                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                        Intent intent2 = new Intent();
+                        intent2.setAction(android.content.Intent.ACTION_VIEW);
                         String type = "image";
-                        intent.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()),type);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
+                        intent2.setDataAndType(Uri.parse(selectedFile.getAbsolutePath()),type);
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent2);
                     }catch (Exception e){
                         Toast.makeText(context.getApplicationContext(),"Cannot open the file",Toast.LENGTH_SHORT).show();
-                    }
+                    }*/
                 }
             }
         });

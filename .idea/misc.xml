@@ -27,6 +27,8 @@
         <entry key="app/src/main/res/layout/activity_grabando_video.xml" value="0.2972222222222222" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3625" />
         <entry key="app/src/main/res/layout/activity_music_player.xml" value="0.1527777777777778" />
+        <entry key="app/src/main/res/layout/activity_music_player_corregir.xml" value="0.21096491228070174" />
+        <entry key="app/src/main/res/layout/activity_music_player_grabacion.xml" value="0.11359649122807018" />
         <entry key="app/src/main/res/layout/activity_opciones_grabacion.xml" value="0.1484375" />
         <entry key="app/src/main/res/layout/activity_revisar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.10989583333333333" />

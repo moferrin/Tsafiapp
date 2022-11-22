@@ -338,9 +338,12 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
             File path = crearDirectorio();
             try {
                 archivo = null;
-                archivo = File.createTempFile("temporal", ".wav", path);
+                //archivo = File.createTempFile("temporal", ".wav", path);
+                archivo = new File(path.getAbsolutePath()+"/"+fechaActual+".wav");
+                archivo.createNewFile();
             } catch (IOException e) {
                 Log.e("archivo", "crear archivo failed");
+                Log.d("laptm", e.toString());
             }
             grabacion.setOutputFile(archivo.getAbsolutePath());
             try {

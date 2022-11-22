@@ -2,20 +2,15 @@ package com.espe.tsafiapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.espe.tsafiapp.audioR.MiMusicPlayer;
 
 import java.io.File;
 public class AdapterArchivos extends RecyclerView.Adapter<AdapterArchivos.ViewHolder>{
@@ -56,7 +51,7 @@ public class AdapterArchivos extends RecyclerView.Adapter<AdapterArchivos.ViewHo
                     ///MiMusicPlayer.getInstance().reset();
                     //MiMusicPlayer.currentIndex = position;
                     Log.d("laptm","antes de intent");
-                    Intent intent = new Intent(context, MusicPlayerActivity.class);
+                    Intent intent = new Intent(context, MusicPlayer_Corregir_Activity.class);
                     intent.putExtra("SONG",selectedFile.getAbsolutePath());
                     Log.d("laptm","antes de startActivity");
                     context.startActivity(intent);

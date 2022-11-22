@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Tsafiapp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MusicPlayerActivity"
+            android:name=".MusicPlayer_Corregir_Activity"
             android:exported="false" />
 
         <meta-data

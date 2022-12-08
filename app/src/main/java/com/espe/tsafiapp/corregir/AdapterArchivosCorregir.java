@@ -12,12 +12,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.espe.tsafiapp.corregir.MusicPlayer_Corregir_Activity;
+
 import java.io.File;
-public class AdapterArchivos extends RecyclerView.Adapter<AdapterArchivos.ViewHolder>{
+public class AdapterArchivosCorregir extends RecyclerView.Adapter<AdapterArchivosCorregir.ViewHolder>{
 
     Context context;
     File[] filesAndFolders;
-    public AdapterArchivos(Context context, File[] filesAndFolders){
+    public AdapterArchivosCorregir(Context context, File[] filesAndFolders){
         this.context = context;
         this.filesAndFolders = filesAndFolders;
     }

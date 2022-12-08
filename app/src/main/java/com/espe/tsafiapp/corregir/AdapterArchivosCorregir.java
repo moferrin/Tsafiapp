@@ -1,5 +1,6 @@
-package com.espe.tsafiapp;
+package com.espe.tsafiapp.corregir;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -8,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.espe.tsafiapp.corregir.MusicPlayer_Corregir_Activity;
+import com.espe.tsafiapp.Corregir;
+import com.espe.tsafiapp.R;
+import com.espe.tsafiapp.leerTxt;
 
 import java.io.File;
 public class AdapterArchivosCorregir extends RecyclerView.Adapter<AdapterArchivosCorregir.ViewHolder>{
@@ -40,6 +44,7 @@ public class AdapterArchivosCorregir extends RecyclerView.Adapter<AdapterArchivo
             holder.imageView.setImageResource(R.drawable.ic_baseline_insert_drive_file_24);
         }
 
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,13 +55,45 @@ public class AdapterArchivosCorregir extends RecyclerView.Adapter<AdapterArchivo
                     cardCorregir.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(cardCorregir);
                 } else {
-                    ///MiMusicPlayer.getInstance().reset();
-                    //MiMusicPlayer.currentIndex = position;
-                    Log.d("laptm","antes de intent");
-                    Intent intent = new Intent(context, MusicPlayer_Corregir_Activity.class);
-                    intent.putExtra("SONG",selectedFile.getAbsolutePath());
-                    Log.d("laptm","antes de startActivity");
-                    context.startActivity(intent);
+                    String extension = selectedFile.getName().split("\\.")[1];
+
+                    Intent intent;
+                    switch (extension){
+                        case "wav":
+                            intent = new Intent(context, MusicPlayer_Corregir_Activity.class);
+                            intent.putExtra("SONG",selectedFile.getAbsolutePath());
+                            Log.d("laptm2",extension);
+                            context.startActivity(intent);
+
+                            break;
+
+                        case "mp4":
+                            intent = new Intent(context, VideoPlayer_Corregir_Activity.class);
+                            intent.putExtra("VIDEO",selectedFile.getAbsolutePath());
+                            Log.d("laptm2",extension);
+                            try{context.startActivity(intent);}
+                            catch (Exception e){
+                                Log.d("laptm2",e.toString());
+                            }
+                            break;
+
+                        case "jpeg":
+
+                            break;
+
+                        case "txt":
+                            intent = new Intent(context, leerTxt.class);
+                            intent.putExtra("FILE",selectedFile.getAbsolutePath());
+                            Log.d("laptm2",extension);
+                            try{context.startActivity(intent);}
+                            catch (Exception e){}
+
+                            break;
+
+                        default:
+                            Toast.makeText(context.getApplicationContext(),"Cannot open the file",Toast.LENGTH_SHORT).show();
+                    }
+
 
                     /*
                     try {
@@ -93,5 +130,9 @@ public class AdapterArchivosCorregir extends RecyclerView.Adapter<AdapterArchivo
             textView = itemView.findViewById(R.id.file_name_view);
             imageView = itemView.findViewById(R.id.icon_view);
         }
+    }
+
+    public String getPatch(){
+        return filesAndFolders[0].getParent();
     }
 }

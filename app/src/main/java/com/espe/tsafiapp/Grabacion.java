@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import com.espe.tsafiapp.data.Traducciones;
+import com.espe.tsafiapp.grabaciones.opcionesGrabacion;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

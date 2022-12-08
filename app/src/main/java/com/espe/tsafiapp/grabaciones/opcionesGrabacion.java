@@ -1,4 +1,4 @@
-package com.espe.tsafiapp;
+package com.espe.tsafiapp.grabaciones;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.espe.tsafiapp.CapturarFoto;
+import com.espe.tsafiapp.Grabacion;
+import com.espe.tsafiapp.GrabandoAudio;
+import com.espe.tsafiapp.GrabandoVideo;
+import com.espe.tsafiapp.R;
 
 public class opcionesGrabacion extends AppCompatActivity {
     Button btnIrGrabandoAudio;

@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements IComunicaFragment
     @Override
     public void irCorregir() {
         Intent cardCorregir = new Intent(this, Corregir.class);
-        String path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getPath();
+        //Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp Environment.DIRECTORY_DOCUMENTS).getPath()
+        String path = Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp";
         cardCorregir.putExtra("path",path);
         startActivity(cardCorregir);
     }

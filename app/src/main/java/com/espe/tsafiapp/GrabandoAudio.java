@@ -32,6 +32,8 @@ import net.gotev.uploadservice.data.UploadNotificationConfig;
 import net.gotev.uploadservice.protocols.multipart.MultipartUploadRequest;*/
 //port net.gotev.uploadservice.UploadNotificationConfig;
 
+import com.espe.tsafiapp.grabaciones.opcionesGrabacion;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,9 +42,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -90,15 +89,13 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
     }
 
     private File crearDirectorio() {
-        File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        File patchFecha = null;
-        if(!(new File(path, fechaActual).exists())){
-            patchFecha = new File(path, fechaActual);
+        //File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File path = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp");
+        File patchFecha = new File(path, fechaActual);
+        if(!(patchFecha.exists())){
             patchFecha.mkdir();
-            return patchFecha;
-        } else {
-            return new File(path, fechaActual);
         }
+        return patchFecha;
     }
 
     private void testeo (File f) {
@@ -340,6 +337,7 @@ public class GrabandoAudio extends AppCompatActivity implements MediaPlayer.OnCo
                 archivo = null;
                 //archivo = File.createTempFile("temporal", ".wav", path);
                 archivo = new File(path.getAbsolutePath()+"/"+fechaActual+".wav");
+
                 archivo.createNewFile();
             } catch (IOException e) {
                 Log.e("archivo", "crear archivo failed");

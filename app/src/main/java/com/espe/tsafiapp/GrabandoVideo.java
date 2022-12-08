@@ -7,12 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -21,18 +18,16 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.espe.tsafiapp.grabaciones.opcionesGrabacion;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -45,7 +40,7 @@ public class GrabandoVideo extends AppCompatActivity {
     String fechaActual;
     private VideoView mVideoView;
     ProgressDialog progressDialog;
-
+    MediaController mediaController;
 
 
     @Override
@@ -53,6 +48,7 @@ public class GrabandoVideo extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grabando_video);
+        mediaController = new MediaController(this);
 
         if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(GrabandoVideo.this,
@@ -69,19 +65,17 @@ public class GrabandoVideo extends AppCompatActivity {
     }
 
     private File crearDirectorio() {
-        File path = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        File patchFecha = null;
-        if(!(new File(path, fechaActual).exists())){
-            patchFecha = new File(path, fechaActual);
+        File path = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp");
+        File patchFecha = new File(path, fechaActual);
+        if(!(patchFecha.exists())){
             patchFecha.mkdir();
-            return patchFecha;
-        } else {
-            return new File(path, fechaActual);
         }
+        return patchFecha;
     }
 
     public void grabarV(View v){
         lanzarVideo.launch(new Intent(MediaStore.ACTION_VIDEO_CAPTURE));
+
     }
 
     ActivityResultLauncher<Intent> lanzarVideo = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -91,8 +85,13 @@ public class GrabandoVideo extends AppCompatActivity {
                 File storageDirectory = crearDirectorio();
 
                 try {
-                    File videoFile = File.createTempFile(fechaActual,".mp4", storageDirectory);
+
+                    ///File videoFile = File.createTempFile(fechaActual,".mp4", storageDirectory);
+                    File videoFile = new File(storageDirectory.getAbsolutePath()+"/"+fechaActual+".mp4");
+                    videoFile.createNewFile();
+                    //Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp
                     Uri uriVideo = result.getData().getData();
+
 
                     InputStream inputStream = getContentResolver().openInputStream(uriVideo);
                     FileOutputStream fileOutputStream = new FileOutputStream(videoFile);
@@ -109,9 +108,14 @@ public class GrabandoVideo extends AppCompatActivity {
                     //testeo(videoFile);
 
                     mVideoView.setVideoURI(uriVideo);
-                    //mVideoView.start();
+                    mVideoView.setMediaController(mediaController);
+                    mediaController.setAnchorView(mVideoView);
 
-                } catch (IOException e) {
+
+                    mVideoView.start();
+
+                } catch (Exception e) {
+                    Log.d("laptm2", e.toString());
                     e.printStackTrace();
                 }
             }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MusicPlayer_Corregir_Activity">
+    tools:context=".corregir.MusicPlayer_Corregir_Activity">
 
 
     <RelativeLayout
@@ -97,7 +97,8 @@
             android:layout_height="64dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="84dp"
-            android:src="@drawable/icon_2check" />
+            android:src="@drawable/icon_2check"
+            android:id="@+id/guardar"/>
 
 
     </RelativeLayout>

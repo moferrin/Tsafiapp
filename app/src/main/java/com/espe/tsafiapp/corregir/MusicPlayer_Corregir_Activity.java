@@ -1,8 +1,11 @@
-package com.espe.tsafiapp;
+package com.espe.tsafiapp.corregir;
 
-
+//import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -13,6 +16,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.espe.tsafiapp.R;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +26,7 @@ public class MusicPlayer_Corregir_Activity extends AppCompatActivity {
 
     TextView currentTime, totalTime, currentTime2, totalTime2;
     SeekBar seekBar, seekBar2;
-    ImageView playPause, stopBtn, playPause2, stopBtn2, btnGrabar;
+    ImageView playPause, stopBtn, playPause2, stopBtn2, btnGrabar, btnGuardarInf;
     String pathAudio;
 
     MediaPlayer mediaPlayer = new MediaPlayer();
@@ -50,6 +55,7 @@ public class MusicPlayer_Corregir_Activity extends AppCompatActivity {
         stopBtn2 = findViewById(R.id.stop2);
 
         btnGrabar = findViewById(R.id.btnGrabar);
+        btnGuardarInf = findViewById(R.id.guardar);
 
 
         pathAudio = getIntent().getStringExtra("SONG");
@@ -139,8 +145,27 @@ public class MusicPlayer_Corregir_Activity extends AppCompatActivity {
         playPause2.setOnClickListener(v -> pausePlay2());
         stopBtn2.setOnClickListener(v -> stopPlay2());
         btnGrabar.setOnClickListener(v -> grabar());
+        btnGuardarInf.setOnClickListener(v -> guardarInf());
+
         //playMusic2();
         //totalTime.setText(String.valueOf(convertTOMMSS(mediaPlayer.getDuration())));
+    }
+
+    private void guardarInf(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Se guardará la corrección")
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // START THE GAME!
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        builder.create().show();
     }
 
     private void playMusic(){
@@ -211,11 +236,10 @@ public class MusicPlayer_Corregir_Activity extends AppCompatActivity {
                 archivo = new File(auxFolfer+"/"+auxName+"rpk.wav");
                 if (archivo.exists()) {
                     archivo.delete();
-                    //archivo = new File(auxFolfer+"/"+auxName+"rpk.wav");
                 }
                 archivo.createNewFile();
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("archivo", "crear archivo failed");
                 Log.d("laptm", e.toString());
             }
@@ -239,6 +263,7 @@ public class MusicPlayer_Corregir_Activity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("DefaultLocale")
     public static String convertTOMMSS(String duration){
         Long millis = Long.parseLong(duration);
         return String.format("%02d:%02d",

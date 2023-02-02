@@ -10,8 +10,7 @@ import com.espe.tsafiapp.data.Traducciones;
 import com.espe.tsafiapp.data.TraduccionesContract.TraduccionesEntry;
 
 public class TraduccionesDbHelper extends SQLiteOpenHelper {
-
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "Traducciones.db";
 
     public TraduccionesDbHelper(Context context) {
@@ -32,8 +31,8 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
                 + TraduccionesEntry.APELLIDO_NOMBRE + " TEXT,"
                 + TraduccionesEntry.EDAD + " TEXT,"
                 + TraduccionesEntry.GENERO + " TEXT,"
+                + TraduccionesEntry.FECHA_CREACION + " TEXT, "
                 + "UNIQUE (" + TraduccionesEntry.ID + "))");
-
     }
 
     public Cursor getAllTraducciones() {

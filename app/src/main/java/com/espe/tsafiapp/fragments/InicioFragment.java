@@ -2,9 +2,12 @@ package com.espe.tsafiapp.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.IntentService;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.espe.tsafiapp.Grabacion;
 import com.espe.tsafiapp.R;
+import com.espe.tsafiapp.ServicioArchivos;
 import com.espe.tsafiapp.TraduccionesDbHelper;
 import com.espe.tsafiapp.VolleySingleton;
 import com.espe.tsafiapp.data.TraduccionesContract;
@@ -36,6 +41,11 @@ import com.espe.tsafiapp.interfaces.IComunicaFragments;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +72,7 @@ public class InicioFragment extends Fragment {
     CardView cardGrabar, cardCorregir, cardTraducir, cardVerificar_1, cardVerificar_2, cardCompartir;
     IComunicaFragments interfaceComunicaFragments;
 
-    private final String URL_SAVE_NAME = "http://192.168.0.113:3000/grabacion";
+    private final String URL_SAVE_NAME = "http://192.168.1.2:3000/grabacion";
 
     public InicioFragment() {
         // Required empty public constructor
@@ -119,10 +129,48 @@ public class InicioFragment extends Fragment {
         eventosMenu();
 
         mTraduccionesDbHelper = new TraduccionesDbHelper(getContext());
+
         //sincronizarDatos();
 
+        try {
+            crearSercicio();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         return vista;
+
     }
+
+    private void crearSercicio() throws IOException {
+        Intent i = new Intent(getContext(), ServicioArchivos.class);
+        i.putExtra("limite", 30);
+
+        actividad.startService(i);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter("broadcast");
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(broadcastReceiver);
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("ROGER",String.valueOf(intent.getIntExtra("contador",0)));
+        }
+    };
+
 
     private void sincronizarDatos() {
         new TraduccionesLoadTask().execute();

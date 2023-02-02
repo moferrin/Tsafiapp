@@ -117,7 +117,7 @@ public class Grabacion extends AppCompatActivity {
     }
 
     public void guardarGrabacion(){
-        Traducciones traduccion = new Traducciones(lengGrab,lengMad,lengSec,ciudad,nota,nombreApe,edad,genero);
+        Traducciones traduccion = new Traducciones(lengGrab,lengMad,lengSec,ciudad,nota,nombreApe,edad,genero,fechaActual);
         new AddTraduccionTask().execute(traduccion);
     }
 

@@ -19,12 +19,12 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 public class AppConfig {
-    private static String BASE_URL = "http://192.168.0.116:3000/";
+    private static String BASE_URL = "http://139.144.169.175:3000/";
     private static final long cacheSize = 5 * 1024 * 1024; // 5 MB
     public static final String HEADER_CACHE_CONTROL = "Cache-Control";
     public static final String HEADER_PRAGMA = "Pragma";
-
-    private static OkHttpClient okHttpClient(){
+/*
+    private static OkHttpClient okHttpClient() {
         return new OkHttpClient.Builder()
                 .cache(cache())
                 //.addInterceptor(httpLoggingInterceptor()) // used if network off OR on
@@ -32,21 +32,25 @@ public class AppConfig {
                 .addInterceptor(offlineInterceptor())
                 .build();
     }
+*/
 
-    private static Cache cache(){
-        return new Cache(new File(Environment.DIRECTORY_DOCUMENTS,"someIdentifier"), cacheSize);
-    }
+    /*
+    private static Cache cache() {
+        return new Cache(new File(Environment.DIRECTORY_DOCUMENTS, "someIdentifier"), cacheSize);
+    }*/
+
+    /*
 
     private static Interceptor networkInterceptor() {
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                Log.d("laptm", "network interceptor: called.");
+                Log.d("laptm2", "network interceptor: called.");
 
                 Response response = chain.proceed(chain.request());
 
                 CacheControl cacheControl = new CacheControl.Builder()
-                        .maxAge(5, TimeUnit.SECONDS)
+                        .maxAge(10, TimeUnit.SECONDS)
                         .build();
 
                 return response.newBuilder()
@@ -56,8 +60,10 @@ public class AppConfig {
                         .build();
             }
         };
-    }
+    }*/
 
+
+    /*
     private static Interceptor offlineInterceptor() {
         return new Interceptor() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -83,12 +89,13 @@ public class AppConfig {
             }
         };
     }
+*/
 
     //private static OkHttpClient okHttpClient;
-    private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+    private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(50, TimeUnit.SECONDS)
+            /*.readTimeout(1, TimeUnit.SECONDS)
+            .writeTimeout(1, TimeUnit.SECONDS)*/
             .build();
 
     static Retrofit getRetrofit() {

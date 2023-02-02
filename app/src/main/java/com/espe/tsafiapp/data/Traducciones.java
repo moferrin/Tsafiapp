@@ -18,8 +18,9 @@ public class Traducciones {
     private String apellidoNombre;
     private String edad;
     private String genero;
+    private String fechaCreacion;
 
-    public Traducciones( String lenguaGrab, String lenguaMadre, String lenguaSecundaria, String ciudad, String nota, String apellidoNombre, String edad, String genero) {
+    public Traducciones( String lenguaGrab, String lenguaMadre, String lenguaSecundaria, String ciudad, String nota, String apellidoNombre, String edad, String genero, String fechaCreacion) {
         this.id = UUID.randomUUID().toString();
         this.lenguaGrab = lenguaGrab;
         this.lenguaMadre = lenguaMadre;
@@ -29,6 +30,7 @@ public class Traducciones {
         this.apellidoNombre = apellidoNombre;
         this.edad = edad;
         this.genero = genero;
+        this.fechaCreacion = fechaCreacion;
     }
 
     @SuppressLint("Range")
@@ -42,6 +44,7 @@ public class Traducciones {
         apellidoNombre = cursor.getString(cursor.getColumnIndex(TraduccionesEntry.APELLIDO_NOMBRE));
         edad = cursor.getString(cursor.getColumnIndex(TraduccionesEntry.EDAD));
         genero = cursor.getString(cursor.getColumnIndex(TraduccionesEntry.GENERO));
+        fechaCreacion = cursor.getString(cursor.getColumnIndex(TraduccionesEntry.FECHA_CREACION));
     }
 
     public String getId() {
@@ -127,6 +130,7 @@ public class Traducciones {
         values.put(TraduccionesEntry.APELLIDO_NOMBRE, apellidoNombre);
         values.put(TraduccionesEntry.EDAD, edad);
         values.put(TraduccionesEntry.GENERO, genero);
+        values.put(TraduccionesEntry.FECHA_CREACION, fechaCreacion);
         return values;
     }
 }

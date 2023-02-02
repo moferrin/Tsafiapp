@@ -17,5 +17,6 @@ public class TraduccionesContract {
         public static final String APELLIDO_NOMBRE = "apellidoNombre";
         public static final String EDAD = "edad";
         public static final String GENERO = "genero";
+        public static final String FECHA_CREACION = "fechaCreacion";
     }
 }

@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -42,12 +43,16 @@ public class GrabandoVideo extends AppCompatActivity {
     ProgressDialog progressDialog;
     MediaController mediaController;
 
+    Handler handler = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grabando_video);
+
+
         mediaController = new MediaController(this);
 
         if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
@@ -63,6 +68,8 @@ public class GrabandoVideo extends AppCompatActivity {
         Intent intent = getIntent();
         fechaActual = intent.getStringExtra(opcionesGrabacion.FECHA_ACTUAL);
     }
+
+
 
     private File crearDirectorio() {
         File path = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp");
@@ -92,7 +99,6 @@ public class GrabandoVideo extends AppCompatActivity {
                     //Environment.getExternalStorageDirectory().getPath() + "/Android/media/com.espe.tsafiapp
                     Uri uriVideo = result.getData().getData();
 
-
                     InputStream inputStream = getContentResolver().openInputStream(uriVideo);
                     FileOutputStream fileOutputStream = new FileOutputStream(videoFile);
                     byte[] buf = new byte[1024];
@@ -113,6 +119,8 @@ public class GrabandoVideo extends AppCompatActivity {
 
 
                     mVideoView.start();
+                    //boroo el archivo de video des pues de copiarlo a la carpeta
+                    new File(uriVideo.getPath()).delete();
 
                 } catch (Exception e) {
                     Log.d("laptm2", e.toString());
@@ -138,7 +146,7 @@ public class GrabandoVideo extends AppCompatActivity {
 
         // Parsing any Media type file
         RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestBody);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
         RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
         Log.d("laptm", "cheeee3");
         ApiConfig getResponse = AppConfig.getRetrofit().create(ApiConfig.class);
@@ -146,13 +154,14 @@ public class GrabandoVideo extends AppCompatActivity {
         Log.d("laptm", "cheeee3_4");
         Call<ServerResponse> call= getResponse.uploadFile(fileToUpload, filename);
 
-        Log.d("laptm", "cheeee4");
+        Log.d("laptm2", "cheeee4");
+
         call.enqueue(new Callback<ServerResponse>() {
             @Override
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
-                Log.d("laptm", "cheeee6");
+                Log.d("laptm2", "cheeee6");
                 ServerResponse serverResponse = response.body();
-                Log.d("laptm", "cheeee7");
+                Log.d("laptm2", "cheeee7");
                 if (serverResponse != null) {
                     if (serverResponse.getSuccess()) {
                         Toast.makeText(getApplicationContext(), serverResponse.getMessage(), Toast.LENGTH_SHORT).show();
@@ -169,7 +178,18 @@ public class GrabandoVideo extends AppCompatActivity {
             @Override
             public void onFailure(Call<ServerResponse> call, Throwable t) {
 
+                Log.d("Laptm2",call.isCanceled()+" "+t.getMessage());
+                Call<ServerResponse> aa = call.clone();
+                try {
+                    aa.execute();
+                } catch (Exception e) {
+                    Log.d("Laptm2",e.toString());
+                    e.printStackTrace();
+                }
+                progressDialog.dismiss();
+
             }
+
         });
 
     }

@@ -6,11 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.espe.tsafiapp.data.Rutas;
+import com.espe.tsafiapp.data.RutasContract.RutasEntry;
 import com.espe.tsafiapp.data.Traducciones;
 import com.espe.tsafiapp.data.TraduccionesContract.TraduccionesEntry;
 
 public class TraduccionesDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "Traducciones.db";
 
     public TraduccionesDbHelper(Context context) {
@@ -33,6 +35,14 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
                 + TraduccionesEntry.GENERO + " TEXT,"
                 + TraduccionesEntry.FECHA_CREACION + " TEXT, "
                 + "UNIQUE (" + TraduccionesEntry.ID + "))");
+
+        db.execSQL("CREATE TABLE " + RutasEntry.TABLE_NAME+ " ("
+                + RutasEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + RutasEntry.ID + " TEXT NOT NULL,"
+                + RutasEntry.RUTA + " TEXT,"
+                + RutasEntry.FECHA_CREACION + " TEXT ,"
+                + RutasEntry.ESTADO + " TEXT ,"
+                + "UNIQUE (" + RutasEntry.ID + "))");
     }
 
     public Cursor getAllTraducciones() {
@@ -40,6 +50,19 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
         return getReadableDatabase()
                 .query(
                         TraduccionesEntry.TABLE_NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+    }
+
+    public Cursor getAllRutas() {
+        Log.d("laptm","getAllRutas");
+        return getReadableDatabase()
+                .query(
+                        RutasEntry.TABLE_NAME,
                         null,
                         null,
                         null,
@@ -59,10 +82,21 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
 
     }
 
+    public long saveRuta (Rutas rutas){
+        Log.d("laptm","saveRuta");
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        return sqLiteDatabase.insert(
+                RutasEntry.TABLE_NAME,
+                null,
+                rutas.toContentValues());
+
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         Log.d("laptm","se debio actuaizar");
         db.execSQL("DROP TABLE IF EXISTS " + TraduccionesEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + RutasEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -74,6 +108,15 @@ public class TraduccionesDbHelper extends SQLiteOpenHelper {
                 traducciones.toContentValues(),
                 TraduccionesEntry.ID + " LIKE ?",
                 new String[]{traduccionId}
+        );
+    }
+
+    public int updateRuta(Rutas rutas, String rutaId) {
+        return getWritableDatabase().update(
+                RutasEntry.TABLE_NAME,
+                rutas.toContentValues(),
+                RutasEntry.ID + " LIKE ?",
+                new String[]{rutaId}
         );
     }
 

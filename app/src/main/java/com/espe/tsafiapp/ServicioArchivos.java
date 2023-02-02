@@ -70,7 +70,7 @@ public class ServicioArchivos extends IntentService {
             if (cursor.moveToFirst()) {
                 do {
                     Log.d("ROGER",cursor.getString(cursor.getColumnIndex(TraduccionesContract.TraduccionesEntry.ID)));
-                    Log.d("ROGER",cursor.getString(cursor.getColumnIndex(TraduccionesContract.TraduccionesEntry.APELLIDO_NOMBRE)));
+                    Log.d("ROGER",cursor.getString(cursor.getColumnIndex(TraduccionesContract.TraduccionesEntry._ID)));
                     //calling the method to save the unsynced name to MySQL
 
 
